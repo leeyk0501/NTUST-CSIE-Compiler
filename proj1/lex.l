@@ -1,8 +1,5 @@
 %{
 /* Compiler Project1 - Lexical Definition
- * TODO: Read keyword case-insensitive
- * TODO: Negative processing
- * TODO: Print keyword caseupper
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +96,6 @@ integer     -?{digs}
 plain_real  {digs}"."{digs}
 expreal     {digs}"."{digs}[Ee][+-]?{digs}
 real        -?{plain_real}|{expreal}
-keywords    boolean|break|char|case|class|continue|def|do|else|exit|false|float|for|if|int|null|object|print|println|repeat|return|string|to|true|type|val|var|while
 delimiters  [\,\:\.\;\(\)\[\]\{\}]
 operators   [\+\-\*\/\%\=]
 logic       "&&"|"||"|"!"|"<"|"<="|">="|">"|"=="|"!="
@@ -120,8 +116,36 @@ space       [\t ]*
 <COMMENT>{newline}  { PRINT(); }
 <COMMENT>.          { LIST; }
 
+boolean     { tokenKeyword("BOOLEAN"); }
+break       { tokenKeyword("BREAK"); }
+char        { tokenKeyword("CHAR"); }
+case        { tokenKeyword("CASE"); }
+class       { tokenKeyword("CLASS"); }
+continue    { tokenKeyword("CONTINUE"); }
+def         { tokenKeyword("DEF"); }
+do          { tokenKeyword("DO"); }
+else        { tokenKeyword("ELSE"); }
+exit        { tokenKeyword("EXIT"); }
+false       { tokenKeyword("FALSE"); }
+float       { tokenKeyword("FLOAT"); }
+for         { tokenKeyword("FOR"); }
+if          { tokenKeyword("IF"); }
+int         { tokenKeyword("INT"); }
+null        { tokenKeyword("NULL"); }
+object      { tokenKeyword("OBJECT"); }
+print       { tokenKeyword("PRINT"); }
+println     { tokenKeyword("PRINTLN"); }
+repeat      { tokenKeyword("REPEAT"); }
+return      { tokenKeyword("RETURN"); }
+string      { tokenKeyword("STRING"); }
+to          { tokenKeyword("TO"); }
+true        { tokenKeyword("TRUE"); }
+type        { tokenKeyword("TYPE"); }
+val         { tokenKeyword("VAL"); }
+var         { tokenKeyword("VAR"); }
+while       { tokenKeyword("WHILE"); }
+
 {space}         { LIST; }
-{keywords}      { token(yytext); }
 {delimiters}    { token(yytext); }
 {operators}     { token(yytext); }
 {logic}         { token(yytext); }
@@ -144,7 +168,7 @@ space       [\t ]*
                             }
                         }
                         str[i]='\0';
-                        tokenString("string", str);
+                        tokenString("String", str);
                     }
                 }
 {id}            { 
