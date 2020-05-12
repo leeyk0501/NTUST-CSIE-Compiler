@@ -92,10 +92,10 @@ int dump() {
 %}
 /* Regular definition */
 digs        [0-9]+
-integer     -?{digs}
+integer     {digs}
 plain_real  {digs}"."{digs}
 expreal     {digs}"."{digs}[Ee][+-]?{digs}
-real        -?{plain_real}|{expreal}
+real        {plain_real}|{expreal}
 delimiters  [\,\:\.\;\(\)\[\]\{\}]
 operators   [\+\-\*\/\%\=]
 logic       "&&"|"||"|"!"|"<"|"<="|">="|">"|"=="|"!="
