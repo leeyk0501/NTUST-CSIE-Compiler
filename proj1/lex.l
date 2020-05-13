@@ -7,10 +7,10 @@
 
 #define LIST strcat(buf, yytext)
 #define token(t) {LIST; printf("<'%s'>\n",t);}
-#define tokenInteger(t,i) {LIST; printf("< %s: %s >\n",t,i);}
-#define tokenReal(t,f) {LIST; printf("< %s: %s >\n",t,f);}
-#define tokenString(t,s) {LIST; printf("< %s: %s >\n",t,s);}
 #define tokenKeyword(k) {LIST; printf("<%s>\n",k);}
+#define tokenInteger(t,i) {LIST; printf("<%s:%s>\n",t,i);}
+#define tokenReal(t,f) {LIST; printf("<%s:%s>\n",t,f);}
+#define tokenString(t,s) {LIST; printf("<%s:%s>\n",t,s);}
 
 #define MAX_LINE_LENG 256
 
@@ -160,14 +160,15 @@ while       { tokenKeyword("WHILE"); }
                         yyless(yyleng);
                         /* Process string */
                         char str[MAX_LINE_LENG];
-                        int i=0,j=1;
-                        while(j<yyleng) {
-                            str[i++] = yytext[j++];
-                            if(yytext[j] == '\"') {
-                                j++;
+                        int i,j=0;
+                        for(i=1;i<yyleng-1;++i) {
+                            if(yytext[i] == yytext[i+1] && yytext[i] == '"') {
+                                i++;
                             }
+                            str[j] = yytext[i];
+                            ++j;
                         }
-                        str[i]='\0';
+                        str[j]='\0';
                         tokenString("String", str);
                     }
                 }
