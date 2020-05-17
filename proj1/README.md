@@ -8,8 +8,7 @@ $ sudo apt install flex bison
 
 ## How to build
 ```
-lex lex.l
-cc -o scanner -O lex.yy.c -ll
+make
 ./scanner < input.scala
 ```
 
