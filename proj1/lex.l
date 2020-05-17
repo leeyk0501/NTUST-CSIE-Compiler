@@ -8,8 +8,9 @@
 #define LIST strcat(buf, yytext)
 #define token(t) {LIST; printf("<'%s'>\n",t);}
 #define tokenKeyword(k) {LIST; printf("<%s>\n",k);}
-#define tokenInteger(t,i) {LIST; printf("<%s:%s>\n",t,i);}
-#define tokenReal(t,f) {LIST; printf("<%s:%s>\n",t,f);}
+#define tokenInteger(t,i) {LIST; printf("<%s:%d>\n",t,i);}
+#define tokenPlainReal(t,f) {LIST; printf("<%s:%f>\n",t,f);}
+#define tokenExpReal(t,e) {LIST; printf("<%s:%e>\n",t,e);}
 #define tokenString(t,s) {LIST; printf("<%s:%s>\n",t,s);}
 
 #define MAX_LINE_LENG 256
@@ -100,7 +101,7 @@ delimiters  [\,\:\.\;\(\)\[\]\{\}]
 operators   [\+\-\*\/\%\=]
 logic       "&&"|"||"|"!"|"<"|"<="|">="|">"|"=="|"!="
 newline     \n
-string      \"[^"]*\"
+string      \"[^"^\n]*\"
 id          [a-zA-Z][0-9a-zA-Z]*
 space       [\t ]*
 
@@ -149,8 +150,9 @@ while       { tokenKeyword("WHILE"); }
 {delimiters}    { token(yytext); }
 {operators}     { token(yytext); }
 {logic}         { token(yytext); }
-{integer}       { tokenInteger("Int", yytext); }
-{real}          { tokenReal("Real", yytext); }
+{integer}       { tokenInteger("int", atoi(yytext)); }
+{plain_real}    { tokenPlainReal("real", atof(yytext)); }
+{expreal}       { tokenExpReal("real", atof(yytext)); }
 {string}        {
                     char c = input();
                     unput(c);
@@ -169,7 +171,7 @@ while       { tokenKeyword("WHILE"); }
                             ++j;
                         }
                         str[j]='\0';
-                        tokenString("String", str);
+                        tokenString("string", str);
                     }
                 }
 {id}            { 
