@@ -33,11 +33,12 @@ void PRINT() {
 }
 
 /* Creates a symbol table. */
-int create() {
+void create() {
     symbolTable = (Symbol*)malloc(sizeof(Symbol));
     symbolTable->index = 0;
     symbolTable->name[0] = '\0';
     symbolTable->next = NULL;
+    return;
 }
 
 /* Returns index of the entry for string s, or -1 if s is not found. */
@@ -76,7 +77,7 @@ int insert(char *s) {
 }
 
 /* Dumps all entries of the symbol table. returns index of the entry. */
-int dump() {
+void dump() {
     if (symbolTable==NULL) {
         create();
     }
@@ -86,7 +87,7 @@ int dump() {
         printf("%s\n", currentSymbol->name);
         currentSymbol = currentSymbol->next;
     }
-    return 0;
+    return;
 }
 
 
