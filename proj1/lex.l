@@ -56,28 +56,33 @@ int lookup(char *s) {
 
 /* Inserts s into a new entry of the symbol table and returns index of the entry. */
 int insert(char *s) {
+    // If symbolTable is empty, create one
     if (symbolTable==NULL) {
         create();
     }
 
+    // Find if the symbol is in the symbolTable
     Symbol *currentSymbol = symbolTable;
     while(currentSymbol->next) {
+        // If symbol is in the symbolTable, return index
         if(strcmp(currentSymbol->next->name,s)==0) {
             return currentSymbol->next->index;
         }
         currentSymbol = currentSymbol->next;
     }
 
+    // Insert symbol if symbol is not in the symbolTable
     Symbol *newSymbol = (Symbol*)malloc(sizeof(Symbol));
     newSymbol->index = currentSymbol->index + 1;
     strcpy(newSymbol->name, s);
     newSymbol->next = NULL;
     currentSymbol->next = newSymbol;
-    return newSymbol->index;
+    return newSymbol->index;  // Return newSymbol index
 }
 
 /* Dumps all entries of the symbol table. returns index of the entry. */
 void dump() {
+    // If symbolTable is empty, create one
     if (symbolTable==NULL) {
         create();
     }
@@ -106,6 +111,7 @@ string      \"[^"^\n]*\"
 id          [a-zA-Z][0-9a-zA-Z]*
 space       [\t ]*
 
+/* Comment mode */
 %x COMMENT
 
 %%
@@ -161,7 +167,7 @@ while       { tokenKeyword("WHILE"); }
                         yymore();
                     } else {
                         yyless(yyleng);
-                        /* Process string */
+                        // Process string
                         char str[MAX_LINE_LENG];
                         int i,j=0;
                         for(i=1;i<yyleng-1;++i) {
