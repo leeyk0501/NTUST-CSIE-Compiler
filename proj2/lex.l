@@ -1,113 +1,36 @@
 %{
-/* Compiler Project2 - Lexical Definition
+/* Compiler Project2 - Syntactic Definition
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "symbol.h"
+#include "y.tab.h"
 
 #define LIST strcat(buf, yytext)
-#define token(t) {LIST; printf("<'%s'>\n",t);}
-#define tokenKeyword(k) {LIST; printf("<%s>\n",k);}
-#define tokenInteger(t,i) {LIST; printf("<%s:%d>\n",t,i);}
-#define tokenPlainReal(t,f) {LIST; printf("<%s:%f>\n",t,f);}
-#define tokenExpReal(t,e) {LIST; printf("<%s:%e>\n",t,e);}
-#define tokenString(t,s) {LIST; printf("<%s:%s>\n",t,s);}
-
+#define token(t) {LIST; return(t);}
 #define MAX_LINE_LENG 256
-
+int lineNum = 0;
 char buf[MAX_LINE_LENG];
-int linecount = 0;
-
-typedef struct Symbol {
-    int index;
-    char name[MAX_LINE_LENG];
-    struct Symbol *next;
-}Symbol;
-
-Symbol *symbolTable = NULL;
 
 /* Output the buf with the line number, then clear buf. */
-void PRINT() {
-    printf("%d: %s\n", ++linecount, buf);
+void nPRINT() {
+    ++lineNum;
+    // printf("%d: %s\n", lineNum, buf);
     buf[0]='\0';
 }
 
-/* Creates a symbol table. */
-void create() {
-    symbolTable = (Symbol*)malloc(sizeof(Symbol));
-    symbolTable->index = 0;
-    symbolTable->name[0] = '\0';
-    symbolTable->next = NULL;
-    return;
-}
-
-/* Returns index of the entry for string s, or -1 if s is not found. */
-int lookup(char *s) {
-    Symbol *currentSymbol = symbolTable;
-    while(currentSymbol->next) {
-        if(strcmp(currentSymbol->next->name,s)==0) {
-            return currentSymbol->next->index;
-        }
-        currentSymbol = currentSymbol->next;
-    }
-    return -1;
-}
-
-
-/* Inserts s into a new entry of the symbol table and returns index of the entry. */
-int insert(char *s) {
-    // If symbolTable is empty, create one
-    if (symbolTable==NULL) {
-        create();
-    }
-
-    // Find if the symbol is in the symbolTable
-    Symbol *currentSymbol = symbolTable;
-    while(currentSymbol->next) {
-        // If symbol is in the symbolTable, return index
-        if(strcmp(currentSymbol->next->name,s)==0) {
-            return currentSymbol->next->index;
-        }
-        currentSymbol = currentSymbol->next;
-    }
-
-    // Insert symbol if symbol is not in the symbolTable
-    Symbol *newSymbol = (Symbol*)malloc(sizeof(Symbol));
-    newSymbol->index = currentSymbol->index + 1;
-    strcpy(newSymbol->name, s);
-    newSymbol->next = NULL;
-    currentSymbol->next = newSymbol;
-    return newSymbol->index;  // Return newSymbol index
-}
-
-/* Dumps all entries of the symbol table. returns index of the entry. */
-void dump() {
-    // If symbolTable is empty, create one
-    if (symbolTable==NULL) {
-        create();
-    }
-    printf("Symbol Table:\n");
-    Symbol *currentSymbol = symbolTable->next;
-    while(currentSymbol) {
-        printf("%s\n", currentSymbol->name);
-        currentSymbol = currentSymbol->next;
-    }
-    return;
-}
-
-
 %}
+
 /* Regular definition */
 digs        [0-9]+
 integer     {digs}
 plain_real  {digs}"."{digs}
 expreal     {digs}"."{digs}[Ee][+-]?{digs}
 real        {plain_real}|{expreal}
-delimiters  [\,\:\.\;\(\)\[\]\{\}]
-operators   [\+\-\*\/\%\=]
-logic       "&&"|"||"|"!"|"<"|"<="|">="|">"|"=="|"!="
 newline     \n
 string      \"[^"^\n]*\"
+char        \'[0-9a-zA-Z]\'
 id          [a-zA-Z][0-9a-zA-Z]*
 space       [\t ]*
 
@@ -116,53 +39,91 @@ space       [\t ]*
 
 %%
 
-<<EOF>> { LIST; PRINT(); return(0); }
+<<EOF>> { LIST; nPRINT(); return(0); }
 
 "/*"    { LIST; BEGIN(COMMENT); }
 \/\/.*  { LIST; }
 <COMMENT>"*/"       { LIST; BEGIN(INITIAL); }
-<COMMENT>{newline}  { PRINT(); }
+<COMMENT>{newline}  { nPRINT(); }
 <COMMENT>.          { LIST; }
 
-boolean     { tokenKeyword("BOOLEAN"); }
-break       { tokenKeyword("BREAK"); }
-char        { tokenKeyword("CHAR"); }
-case        { tokenKeyword("CASE"); }
-class       { tokenKeyword("CLASS"); }
-continue    { tokenKeyword("CONTINUE"); }
-def         { tokenKeyword("DEF"); }
-do          { tokenKeyword("DO"); }
-else        { tokenKeyword("ELSE"); }
-exit        { tokenKeyword("EXIT"); }
-false       { tokenKeyword("FALSE"); }
-float       { tokenKeyword("FLOAT"); }
-for         { tokenKeyword("FOR"); }
-if          { tokenKeyword("IF"); }
-int         { tokenKeyword("INT"); }
-null        { tokenKeyword("NULL"); }
-object      { tokenKeyword("OBJECT"); }
-print       { tokenKeyword("PRINT"); }
-println     { tokenKeyword("PRINTLN"); }
-repeat      { tokenKeyword("REPEAT"); }
-return      { tokenKeyword("RETURN"); }
-string      { tokenKeyword("STRING"); }
-to          { tokenKeyword("TO"); }
-true        { tokenKeyword("TRUE"); }
-type        { tokenKeyword("TYPE"); }
-val         { tokenKeyword("VAL"); }
-var         { tokenKeyword("VAR"); }
-while       { tokenKeyword("WHILE"); }
+","     token(COM);
+":"     token(COL);
+"."     token(PER);
+";"     token(SEM);
+"("     token(PAR_L);
+")"     token(PAR_R);
+"["     token(SBRA_L);
+"]"     token(SBRA_R);
+"{"     token(BRA_L);
+"}"     token(BRA_R);
+
+"+"     token(ADD);
+"-"     token(SUB);
+"*"     token(MUL);
+"/"     token(DIV);
+"%"     token(REM);
+
+"<"     token(LE);
+"<""="  token(LEEQ);
+">"     token(GR);
+">""="  token(GREQ);
+"=""="  token(EQ);
+"!""="  token(NEQ);
+
+"&""&"  token(AND);
+"|""|"  token(OR);
+"!"     token(NOT);
+
+"="     token(ASS);
+
+"<""-"  token(ARR);
+
+boolean     { token(BOOLEAN); }
+break       { token(BREAK); }
+char        { token(CHAR); }
+case        { token(CASE); }
+class       { token(CLASS); }
+continue    { token(CONTINUE); }
+def         { token(DEF); }
+do          { token(DO); }
+else        { token(ELSE); }
+exit        { token(EXIT); }
+false       { token(FALSE); }
+float       { token(FLOAT); }
+for         { token(FOR); }
+if          { token(IF); }
+int         { token(INT); }
+null        { token(nULL); }
+object      { token(OBJECT); }
+print       { token(PRINT); }
+println     { token(PRINTLN); }
+repeat      { token(REPEAT); }
+return      { token(RETURN); }
+string      { token(STRING); }
+to          { token(TO); }
+true        { token(TRUE); }
+type        { token(TYPE); }
+val         { token(VAL); }
+var         { token(VAR); }
+while       { token(WHILE); }
 
 {space}         { LIST; }
-{delimiters}    { token(yytext); }
-{operators}     { token(yytext); }
-{logic}         { token(yytext); }
-{integer}       { tokenInteger("int", atoi(yytext)); }
-{plain_real}    { tokenPlainReal("real", atof(yytext)); }
-{expreal}       { tokenExpReal("real", atof(yytext)); }
+{integer}       { 
+                    sscanf(yytext, "%d", &yylval.intVal);
+                    token(INT_VAL);
+                }
+{plain_real}    {
+                    sscanf(yytext, "%f", &yylval.floatVal);
+                    token(FLOAT_VAL);
+                }
+{expreal}       {
+                    sscanf(yytext, "%f", &yylval.floatVal);
+                    token(FLOAT_VAL);
+                }
 {string}        {
-                    char c = input();
-                    unput(c);
+                    char c = getc(yyin);
+                    ungetc(c, yyin);
                     if(c == '\"') {
                         yymore();
                     } else {
@@ -178,26 +139,24 @@ while       { tokenKeyword("WHILE"); }
                             ++j;
                         }
                         str[j]='\0';
-                        tokenString("string", str);
+
+                        yylval.stringVal = strdup(str);
+                        token(STRING_VAL);
                     }
                 }
-{id}            { 
-                    tokenString("id", yytext); 
-                    insert(yytext);
+{char}          {
+                    sscanf(yytext, "%c", &yylval.charVal);
+                    token(CHAR_VAL);
                 }
-{newline}       { PRINT(); }
+{id}            { 
+                    yylval.stringVal = strdup(yytext);
+                    token(ID);
+                }
+{newline}       { nPRINT(); }
 .               {
-                    PRINT();
+                    nPRINT();
                     printf("bad character:'%s'\n",yytext);
                     exit(-1);
                 }
 
 %%
-
-int main()
-{
-    yylex();
-    printf("\n");
-    dump();
-    return(0);
-}

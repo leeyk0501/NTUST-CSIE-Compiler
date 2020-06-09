@@ -1,11 +1,10 @@
-all: scanner
+all: parser
 
-scanner: lex.yy.c
-	cc -o scanner -O lex.yy.c -ll
-
-lex.yy.c: lex.l
+parser: lex.l yacc.y symbol.h symbol.cpp
 	lex lex.l
+	yacc -d yacc.y
+	g++ -o parser y.tab.c symbol.cpp -ll -ly -std=c++11
 
 .PHONY: clean
 clean:
-	rm lex.yy.c scanner
+	rm lex.yy.c y.tab.* parser
