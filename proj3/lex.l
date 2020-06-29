@@ -122,8 +122,8 @@ while       { token(WHILE); }
                     token(FLOAT_VAL);
                 }
 {string}        {
-                    char c = getc(yyin);
-                    ungetc(c, yyin);
+                    char c = yyinput();
+                    unput(c);
                     if(c == '\"') {
                         yymore();
                     } else {

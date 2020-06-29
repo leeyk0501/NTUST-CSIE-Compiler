@@ -16,3 +16,11 @@ The project is to generate code (in Java assembly language) for the **Scala** la
 $ sudo apt install flex bison
 $ sudo apt-get install openjdk-8-jre
 ```
+
+## How to build & run
+```
+$ make
+$ ./parser example.scala
+$ javaa/javaa example.scala
+$ java example
+```

@@ -40,6 +40,10 @@ class Symbol {
         string name;
         int type;
         vector<int> argumentType;
+
+        // Java bytecode
+        string byteCode;
+        string storeCode;
 };
 
 class SymbolTable {
@@ -53,5 +57,7 @@ class SymbolTable {
         SymbolTable *parentTable;
         string name;
         int returnType;
+        bool hasReturn;
+        int localValueIndex;
 };
 #endif //SYMBOL_H

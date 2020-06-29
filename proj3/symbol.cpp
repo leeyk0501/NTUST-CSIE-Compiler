@@ -7,6 +7,8 @@ Symbol::Symbol() {
 Symbol::Symbol(string name, int type) {
     this->name = name;
     this->type = type;
+    this->byteCode = "";
+    this->storeCode = "";
 }
 
 void Symbol::insertArg(int type) {
@@ -17,12 +19,16 @@ SymbolTable::SymbolTable() {
     this->name = "";
     this->parentTable = NULL;
     this->returnType = NON;
+    this->hasReturn = false;
+    this->localValueIndex = 0;
 }
 
 SymbolTable::SymbolTable(string name, SymbolTable *parentTable) {
     this->name = name;
     this->parentTable = parentTable;
     this->returnType = NON;
+    this->hasReturn = false;
+    this->localValueIndex = 0;
 }
 
 Symbol* SymbolTable::globalLookup(string name) {
