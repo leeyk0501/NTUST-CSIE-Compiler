@@ -25,14 +25,11 @@ bool elseBranch = false;
 string fileName = "";
 string rawName = "";
 ofstream fout;
-int tabs = 0;
+bool hasValue = false;
 
 // Branch
 int branchIndex;
-stack<int> branch;
-
-// IDK
-bool hasValue = false;
+stack<int> branchStack;
 
 // union data
 bool bool_value = false;
@@ -50,9 +47,7 @@ void clearUnionData() {
 }
 
 void fileWrite(ofstream &fs, string str) {
-    for (int i = 0; i < tabs; ++i) {
-        str = "    " + str;
-    }
+    // cout << str << endl;
     fs << str << endl;
 }
 
@@ -138,7 +133,6 @@ object_declaration: OBJECT ID   {
                                     // Java bytecode
                                     fileWrite(fout, "class " + string($2));
                                     fileWrite(fout, "{");
-                                    tabs++;
                                 }
                         BRA_L object_block_declarations BRA_R {
                                                                     // Check if method have "main"
@@ -151,7 +145,6 @@ object_declaration: OBJECT ID   {
                                                                     delete temp;
 
                                                                     // Java bytecode
-                                                                    tabs--;
                                                                     fileWrite(fout, "}");
                                                                     fout.close();
                                                               }
@@ -563,13 +556,11 @@ method_declaration: DEF ID {
                                                                                                 fileWrite(fout, "max_stack 15");
                                                                                                 fileWrite(fout, "max_locals 15");
                                                                                                 fileWrite(fout, "{");
-                                                                                                tabs++;
                                                                                             } block {
                                                                                                         // Java bytecode
                                                                                                         if (!scope->hasReturn) {
                                                                                                             fileWrite(fout, "return");
                                                                                                         }
-                                                                                                        tabs--;
                                                                                                         fileWrite(fout, "}");
 
                                                                                                         SymbolTable *trashTable = scope;
@@ -736,34 +727,34 @@ simple: ID ASS expression                                   {
 
 conditional: IF PAR_L boolean_expression PAR_R  {
                                                     elseBranch = false;
-                                                    branch.push(branchIndex + 1);
-                                                    branch.push(branchIndex);
-                                                    branch.push(branchIndex + 1);
-                                                    branch.push(branchIndex);
+                                                    branchStack.push(branchIndex + 1);
+                                                    branchStack.push(branchIndex);
+                                                    branchStack.push(branchIndex + 1);
+                                                    branchStack.push(branchIndex);
                                                     branchIndex += 2;
 
-                                                    fileWrite(fout, "ifeq L" + to_string(branch.top()));
-                                                    branch.pop();
+                                                    fileWrite(fout, "ifeq L" + to_string(branchStack.top()));
+                                                    branchStack.pop();
                                                 } block_or_simple optional_else {
                                                                                     if (elseBranch) {
-                                                                                        fileWrite(fout, "L" + to_string(branch.top()) + ":");
+                                                                                        fileWrite(fout, "L" + to_string(branchStack.top()) + ":");
                                                                                     }
-                                                                                    branch.pop();
+                                                                                    branchStack.pop();
                                                                                 }
            ;
 
 optional_else: /* empty */  {
-                                branch.pop();
-                                fileWrite(fout, "L" + to_string(branch.top()) + ":");
-                                branch.pop();
+                                branchStack.pop();
+                                fileWrite(fout, "L" + to_string(branchStack.top()) + ":");
+                                branchStack.pop();
                             }
              | ELSE         {
                                 elseBranch = true;
 
-                                int gotoIndex = branch.top();
-                                branch.pop();
-                                int labelIndex = branch.top();
-                                branch.pop();
+                                int gotoIndex = branchStack.top();
+                                branchStack.pop();
+                                int labelIndex = branchStack.top();
+                                branchStack.pop();
 
                                 fileWrite(fout, "goto L" + to_string(gotoIndex));
                                 fileWrite(fout, "L" + to_string(labelIndex) + ":");
@@ -782,23 +773,23 @@ block_or_simple:    {
                ;
 
 while_loop: WHILE   {
-                        branch.push(branchIndex + 1);
-                        branch.push(branchIndex);
-                        branch.push(branchIndex + 1);
-                        branch.push(branchIndex);
+                        branchStack.push(branchIndex + 1);
+                        branchStack.push(branchIndex);
+                        branchStack.push(branchIndex + 1);
+                        branchStack.push(branchIndex);
                         branchIndex += 2;
 
-                        fileWrite(fout, "L" + to_string(branch.top()) + ":");
-                        branch.pop();
+                        fileWrite(fout, "L" + to_string(branchStack.top()) + ":");
+                        branchStack.pop();
 
                     } PAR_L boolean_expression PAR_R    {
-                                                            fileWrite(fout, "ifeq L" + to_string(branch.top()));
-                                                            branch.pop();
+                                                            fileWrite(fout, "ifeq L" + to_string(branchStack.top()));
+                                                            branchStack.pop();
                                                         } block_or_simple   {
-                                                                                int gotoIndex = branch.top();
-                                                                                branch.pop();
-                                                                                int labelIndex = branch.top();
-                                                                                branch.pop();
+                                                                                int gotoIndex = branchStack.top();
+                                                                                branchStack.pop();
+                                                                                int labelIndex = branchStack.top();
+                                                                                branchStack.pop();
 
                                                                                 fileWrite(fout, "goto L" + to_string(gotoIndex));
                                                                                 fileWrite(fout, "L" + to_string(labelIndex) + ":");
@@ -816,14 +807,14 @@ for_loop: FOR PAR_L ID  {
                                                         fileWrite(fout, "sipush " + to_string($6));
                                                         fileWrite(fout, symbol->storeCode);
 
-                                                        branch.push(branchIndex + 1);
-                                                        branch.push(branchIndex);
-                                                        branch.push(branchIndex + 1);
-                                                        branch.push(branchIndex);
+                                                        branchStack.push(branchIndex + 1);
+                                                        branchStack.push(branchIndex);
+                                                        branchStack.push(branchIndex + 1);
+                                                        branchStack.push(branchIndex);
                                                         branchIndex += 2;
 
-                                                        fileWrite(fout, "L" + to_string(branch.top()) + ":");
-                                                        branch.pop();
+                                                        fileWrite(fout, "L" + to_string(branchStack.top()) + ":");
+                                                        branchStack.pop();
                                                     } PAR_R block_or_simple {
                                                                                 fileWrite(fout, "sipush " + to_string($8));
                                                                                 symbol = scope->globalLookup($3);
@@ -832,8 +823,8 @@ for_loop: FOR PAR_L ID  {
                                                                                 }
 
                                                                                 fileWrite(fout, "isub");
-                                                                                fileWrite(fout, "ifeq L" + to_string(branch.top()));
-                                                                                branch.pop();
+                                                                                fileWrite(fout, "ifeq L" + to_string(branchStack.top()));
+                                                                                branchStack.pop();
 
                                                                                 fileWrite(fout, "iconst_1");
                                                                                 if (symbol != NULL) {
@@ -845,11 +836,11 @@ for_loop: FOR PAR_L ID  {
                                                                                     fileWrite(fout, symbol->storeCode);
                                                                                 }
 
-                                                                                fileWrite(fout, "goto L" + to_string(branch.top()));
-                                                                                branch.pop();
+                                                                                fileWrite(fout, "goto L" + to_string(branchStack.top()));
+                                                                                branchStack.pop();
 
-                                                                                fileWrite(fout, "L" + to_string(branch.top()) + ":");
-                                                                                branch.pop();
+                                                                                fileWrite(fout, "L" + to_string(branchStack.top()) + ":");
+                                                                                branchStack.pop();
                                                                             }
         ;
 
