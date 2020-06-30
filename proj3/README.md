@@ -21,6 +21,26 @@ $ sudo apt-get install openjdk-8-jre
 ```
 $ make
 $ ./parser example.scala
-$ javaa/javaa example.scala
+$ javaa/javaa example.jasm
 $ java example
 ```
+
+## Files tree
+```
+├── lex.l       // The Scanner
+├── yacc.y      // The Parser & Code Generator
+├── symbol.h    // Symbol & SymbolTable Class Header
+├── symbol.cpp  // Symbol & SymbolTable Class c++
+├── Makefile    // Makefile
+└── example/    // Testing scala file folder
+```
+
+## Update log
+### `lex.l`
++ 修正 string 的 bug
+### `yacc.y`
++ 修正 proj2 舊有的 bug
++ 於每個區塊放入適當的 Code Generator
+### `symbol.h` & `symbol.cpp`
++ 於 `Symbol` 和 `SymbolTable` 新增成員供 `yacc.y` 使用
+
