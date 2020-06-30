@@ -60,25 +60,18 @@ void fileWrite(ofstream &fs, string str) {
 string formatString(string str) {
     string result = "";
     for (int i=0; i < str.length(); ++i) {
-        switch(str[i]) {
-            case '\t':
-                result += "\\t";
-                break;
-            case '\n':
-                result += "\\n";
-                break;
-            case '\'':
-                result += "\\\'";
-                break;
-            case '\"':
-                result += "\\\"";
-                break;
-            case '\\':
-                result += "\\\\";
-                break;
-            default:
-                result += string(1, str[i]);
-                break;
+        if (str[i] == '\t') {
+            result += "\\t";
+        } else if (str[i] == '\n') {
+            result += "\\n";
+        } else if (str[i] == '\'') {
+            result += "\\\'";
+        } else if (str[i] == '\"') {
+            result += "\\\"";
+        } else if (str[i] == '\\') {
+            result += "\\\\";
+        } else {
+            result += string(1, str[i]);
         }
     }
     return result;
@@ -191,34 +184,27 @@ constant: VAL ID assignment_type ASS constant_expression    {
                                                                 // Java bytecode
                                                                 symbol = scope->localLookup($2);
                                                                 if (symbol != NULL) {
-                                                                    switch (symbol->type) {
-                                                                        case CONST_BOOL:
-                                                                            if (bool_value) {
-                                                                                symbol->byteCode = "iconst_1";
-                                                                            } else {
-                                                                                symbol->byteCode = "iconst_0";
-                                                                            }
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_INT:
-                                                                            symbol->byteCode = "sipush " + to_string(int_value);
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_FLOAT:
-                                                                            symbol->byteCode = "sipush " + to_string(float_value);
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_CHAR:
-                                                                            symbol->byteCode = "ldc \"" + string(1, char_value) + "\"";
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_STRING:
-                                                                            symbol->byteCode = "ldc \"" + string_value + "\"";
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        default:
-                                                                            yyerror("error");
-                                                                            break;    
+                                                                    if (symbol->type == CONST_BOOL) {
+                                                                        if (bool_value) {
+                                                                            symbol->byteCode = "iconst_1";
+                                                                        } else {
+                                                                            symbol->byteCode = "iconst_0";
+                                                                        }
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_INT) {
+                                                                        symbol->byteCode = "sipush " + to_string(int_value);
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_FLOAT) {
+                                                                        symbol->byteCode = "sipush " + to_string(float_value);
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_CHAR) {
+                                                                        symbol->byteCode = "ldc \"" + string(1, char_value) + "\"";
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_STRING) {
+                                                                        symbol->byteCode = "ldc \"" + string_value + "\"";
+                                                                        clearUnionData();
+                                                                    } else {
+                                                                        yyerror("error");
                                                                     }
                                                                 }
                                                             }
@@ -232,34 +218,27 @@ constant: VAL ID assignment_type ASS constant_expression    {
                                                                 // Java bytecode
                                                                 symbol = scope->localLookup($2);
                                                                 if (symbol != NULL) {
-                                                                    switch (symbol->type) {
-                                                                        case CONST_BOOL:
-                                                                            if (bool_value) {
-                                                                                symbol->byteCode = "iconst_1";
-                                                                            } else {
-                                                                                symbol->byteCode = "iconst_0";
-                                                                            }
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_INT:
-                                                                            symbol->byteCode = "sipush " + to_string(int_value);
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_FLOAT:
-                                                                            symbol->byteCode = "sipush " + to_string(float_value);
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_CHAR:
-                                                                            symbol->byteCode = "ldc \"" + string(1, char_value) + "\"";
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        case CONST_STRING:
-                                                                            symbol->byteCode = "ldc \"" + formatString(string_value) + "\"";
-                                                                            clearUnionData();
-                                                                            break;
-                                                                        default:
-                                                                            yyerror("error");
-                                                                            break;
+                                                                    if (symbol->type == CONST_BOOL) {
+                                                                        if (bool_value) {
+                                                                            symbol->byteCode = "iconst_1";
+                                                                        } else {
+                                                                            symbol->byteCode = "iconst_0";
+                                                                        }
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_INT) {
+                                                                        symbol->byteCode = "sipush " + to_string(int_value);
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_FLOAT) {
+                                                                        symbol->byteCode = "sipush " + to_string(float_value);
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_CHAR) {
+                                                                        symbol->byteCode = "ldc \"" + string(1, char_value) + "\"";
+                                                                        clearUnionData();
+                                                                    } else if (symbol->type == CONST_STRING) {
+                                                                        symbol->byteCode = "ldc \"" + formatString(string_value) + "\"";
+                                                                        clearUnionData();
+                                                                    } else {
+                                                                        yyerror("error");
                                                                     }
                                                                 }
                                                             }
@@ -322,23 +301,18 @@ variable: VAR ID                                            {
 
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "iconst_1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "iconst_0");
-                                                                                    }
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "sipush " + to_string(int_value));
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "iconst_1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "iconst_0");
+                                                                                }
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "sipush " + to_string(int_value));
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
                                                                             }
                                                                         } 
                                                                     } else {
@@ -347,21 +321,16 @@ variable: VAR ID                                            {
                                                                         
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 0");
-                                                                                    }
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 0");
+                                                                                }
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
+                                                                                clearUnionData();
                                                                             }
                                                                         } else {
                                                                             fileWrite(fout, "field static int " + symbol->name);
@@ -388,23 +357,18 @@ variable: VAR ID                                            {
 
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "iconst_1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "iconst_0");
-                                                                                    }
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "sipush " + to_string(int_value));
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "iconst_1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "iconst_0");
+                                                                                }
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "sipush " + to_string(int_value));
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
                                                                             }
                                                                         } 
                                                                     } else {
@@ -413,21 +377,16 @@ variable: VAR ID                                            {
                                                                         
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 0");
-                                                                                    }
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 0");
+                                                                                }
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
+                                                                                clearUnionData();
                                                                             }
                                                                         } else {
                                                                             fileWrite(fout, "field static int " + symbol->name);
@@ -454,23 +413,18 @@ variable: VAR ID                                            {
 
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "iconst_1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "iconst_0");
-                                                                                    }
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "sipush " + to_string(int_value));
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "iconst_1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "iconst_0");
+                                                                                }
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "sipush " + to_string(int_value));
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
                                                                             }
                                                                         } 
                                                                     } else {
@@ -479,21 +433,16 @@ variable: VAR ID                                            {
                                                                         
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 0");
-                                                                                    }
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 0");
+                                                                                }
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
+                                                                                clearUnionData();
                                                                             }
                                                                         } else {
                                                                             fileWrite(fout, "field static int " + symbol->name);
@@ -523,23 +472,18 @@ variable: VAR ID                                            {
 
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "iconst_1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "iconst_0");
-                                                                                    }
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "sipush " + to_string(int_value));
-                                                                                    fileWrite(fout, symbol->storeCode);
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "iconst_1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "iconst_0");
+                                                                                }
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "sipush " + to_string(int_value));
+                                                                                fileWrite(fout, symbol->storeCode);
+                                                                                clearUnionData();
                                                                             }
                                                                         } 
                                                                     } else {
@@ -548,21 +492,16 @@ variable: VAR ID                                            {
                                                                         
                                                                         if (hasValue) {
                                                                             hasValue = false;
-                                                                            switch (symbol->type) {
-                                                                                case VAR_BOOL:
-                                                                                    if (bool_value) {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 1");
-                                                                                    } else {
-                                                                                        fileWrite(fout, "field static int " + symbol->name + " = 0");
-                                                                                    }
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                case VAR_INT:
-                                                                                    fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
-                                                                                    clearUnionData();
-                                                                                    break;
-                                                                                default:
-                                                                                    break;
+                                                                            if (symbol->type == VAR_BOOL) {
+                                                                                if (bool_value) {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 1");
+                                                                                } else {
+                                                                                    fileWrite(fout, "field static int " + symbol->name + " = 0");
+                                                                                }
+                                                                                clearUnionData();
+                                                                            } else if (symbol->type == VAR_INT) {
+                                                                                fileWrite(fout, "field static int " + symbol->name + " = " + to_string(int_value));
+                                                                                clearUnionData();
                                                                             }
                                                                         } else {
                                                                             fileWrite(fout, "field static int " + symbol->name);
@@ -594,15 +533,10 @@ method_declaration: DEF ID {
                            } PAR_L optional_formal_arguments PAR_R optional_assignment_type {
                                                                                                 // Java bytecode
                                                                                                 string functionType = "void ";
-                                                                                                switch (symbol->type) {
-                                                                                                    case FUNC_NON:
-                                                                                                        break;
-                                                                                                    case FUNC_INT:
-                                                                                                    case FUNC_BOOL:
-                                                                                                        functionType = "int ";
-                                                                                                        break;
-                                                                                                    default:
-                                                                                                        break;
+                                                                                                if (symbol->type == FUNC_NON) {
+
+                                                                                                } else if (symbol->type == FUNC_INT || symbol->type == FUNC_BOOL) {
+                                                                                                    functionType = "int ";
                                                                                                 }
 
                                                                                                 string arguName = symbol->name;
@@ -611,14 +545,10 @@ method_declaration: DEF ID {
                                                                                                     if (i) {
                                                                                                         arguName += ", ";
                                                                                                     }
-                                                                                                    switch(symbol->argumentType[i]) {
-                                                                                                        case VAR_INT:
-                                                                                                        case VAR_BOOL:
-                                                                                                            arguName += "int";
-                                                                                                            break;
-                                                                                                        default:
-                                                                                                            arguName += "int";
-                                                                                                            break;
+                                                                                                    if (symbol->argumentType[i] == VAR_INT || symbol->argumentType[i] == VAR_BOOL) {
+                                                                                                        arguName += "int";
+                                                                                                    } else {
+                                                                                                        arguName += "int";
                                                                                                     }
                                                                                                 }
                                                                                                 arguName += ")";
