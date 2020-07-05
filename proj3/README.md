@@ -1,5 +1,13 @@
 # Project3 - Code Generation
-The project is to generate code (in Java assembly language) for the **Scala** language. The generated code will then be translated to Java bytecode by a Java assembler.
+The project is to generate code (in **Java assembly language**) for the Scala language. The generated code will then be translated to Java bytecode by a Java assembler.
+
+## Language Restrictions
+In order to keep the code generation assignment simple that we can implement most of the features of the language, only a subset set of Scala language will be considered in this assignment:
+
++ No READ statements.
++ No declaration or use of arrays.
++ No floating-point numbers.
++ No string variables.
 
 ## My development env
 ### OS
@@ -32,6 +40,7 @@ $ java example
 ├── symbol.h    // Symbol & SymbolTable Class Header
 ├── symbol.cpp  // Symbol & SymbolTable Class c++
 ├── Makefile    // Makefile
+├── javaa/      // Folder for generate Java assembly language 
 └── example/    // Testing scala file folder
 ```
 

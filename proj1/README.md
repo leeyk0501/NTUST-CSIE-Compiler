@@ -1,5 +1,5 @@
 # Project1 - Lexical Definition
-The project is to write a scanner for the **Scala** language in lex.
+The project is to write a scanner for the Scala language in **lex**.
 
 ## Install flex
 ```

@@ -1,7 +1,5 @@
-# Project2 - Lexical Definition
-The project is to write an LALR(1) parser for the **Scala** language.
-Write the
-grammar and create a parser using **yacc**.
+# Project2 - Syntactic and Semantic Definitions
+The project is to write a LALR(1) parser for the Scala language in **yacc**.
 
 ## My development env
 ### OS
